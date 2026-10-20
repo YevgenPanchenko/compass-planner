@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Компас</string>
+
+    <!-- Tabs -->
+    <string name="tab_planner">Календар</string>
+    <string name="tab_matrix">Матриця</string>
+    <string name="tab_habits">Звички</string>
+    <string name="tab_journal">Щоденник</string>
+    <string name="tab_more">Більше</string>
+
+    <!-- Common -->
+    <string name="save">Зберегти</string>
+    <string name="cancel">Скасувати</string>
+    <string name="delete">Видалити</string>
+    <string name="edit">Редагувати</string>
+    <string name="ok">Гаразд</string>
+    <string name="back">Назад</string>
+    <string name="clear">Очистити</string>
+    <string name="none">Не вибрано</string>
+    <string name="today">Сьогодні</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="previous">Попередній</string>
+    <string name="next">Наступний</string>
+    <string name="drag">Перетягнути</string>
+    <string name="autosave_hint">Зберігається автоматично.</string>
+
+    <!-- Planner -->
+    <string name="mode_day">День</string>
+    <string name="mode_week">Тиждень</string>
+    <string name="mode_month">Місяць</string>
+    <string name="inbox">Без дати</string>
+    <string name="inbox_empty">Тут живуть задачі без дати. Перетягніть їх на потрібний день.</string>
+    <string name="day_empty">Порожньо. Перетягніть сюди задачу або натисніть +</string>
+    <string name="day_empty_simple">На цей день задач немає.</string>
+    <string name="day_tasks">Задачі на день</string>
+    <string name="add_task">Додати задачу</string>
+    <string name="add_task_for_goal">Задача для цієї цілі</string>
+    <string name="open_day">Відкрити день</string>
+    <string name="overdue_count">Невиконаних задач з минулих днів: %1$d</string>
+    <string name="move_to_today">На сьогодні</string>
+    <string name="week_goals">Ролі та цілі тижня</string>
+    <string name="week_goals_no_roles">Спершу визначте свої ролі: хто ви для інших і для себе.</string>
+    <string name="week_goals_hint">Почніть тиждень із «великих каменів»: поставте 1–2 цілі для кожної ролі й заплануйте їх у дні.</string>
+    <string name="habits_for_day">Звички</string>
+    <string name="add_goal">Додати ціль</string>
+    <string name="add_role">Додати роль</string>
+    <string name="no_role">Без ролі</string>
+
+    <!-- Matrix -->
+    <string name="matrix_title">Матриця Ейзенхауера</string>
+    <string name="matrix_hint">Утримуйте задачу, щоб перетягнути її в інший квадрант. Квадрант II — зона ефективності.</string>
+    <string name="q1_title">Важливо й терміново</string>
+    <string name="q2_title">Важливо, не терміново</string>
+    <string name="q3_title">Терміново, не важливо</string>
+    <string name="q4_title">Не важливо й не терміново</string>
+    <string name="q1_action">Зробити</string>
+    <string name="q2_action">Запланувати</string>
+    <string name="q3_action">Делегувати</string>
+    <string name="q4_action">Відкинути</string>
+    <string name="q1_hint">Квадрант I: кризи та дедлайни. Виконайте якнайшвидше.</string>
+    <string name="q2_hint">Квадрант II: розвиток, стосунки, планування. Тут народжується ефективність.</string>
+    <string name="q3_hint">Квадрант III: чужі пріоритети й переривання. Делегуйте або скоротіть.</string>
+    <string name="q4_hint">Квадрант IV: марнування часу. Чи варто це робити взагалі?</string>
+
+    <!-- Habits -->
+    <string name="habits_title">Трекер звичок</string>
+    <string name="habits_intro">Позначайте виконання щодня. Маленькі кроки щодня — це «заточування пили».</string>
+    <string name="habits_empty">Ще немає звичок. Додайте першу, наприклад «Ранкова пробіжка» або «Читання 20 хвилин».</string>
+    <string name="add_habit">Додати звичку</string>
+    <string name="habit_last30">За останні 30 днів: %1$d</string>
+    <string name="habit_new">Нова звичка</string>
+    <string name="habit_edit">Звичка</string>
+    <string name="field_habit_name">Назва звички</string>
+    <string name="habit_placeholder">Наприклад: Читати 20 хвилин</string>
+    <string name="habit_reminder_daily">Нагадувати щодня</string>
+
+    <!-- Journal -->
+    <string name="journal_title">Щоденник</string>
+    <string name="journal_today">Запис за сьогодні</string>
+    <string name="journal_empty">Щоденник порожній. Підсумовуйте день: що вдалося, чого навчилися, що змінити завтра.</string>
+    <string name="journal_prompts_label">Питання для роздумів</string>
+    <string name="journal_placeholder">Як минув день?</string>
+    <string-array name="journal_prompts">
+        <item>Що сьогодні було найважливішим?</item>
+        <item>Чи діяв я відповідно до своєї місії?</item>
+        <item>Яку роль я сьогодні виконав найкраще?</item>
+        <item>За що я вдячний?</item>
+        <item>Що я зроблю завтра для «заточування пили»?</item>
+    </string-array>
+
+    <!-- More -->
+    <string name="mission_title">Особиста місія</string>
+    <string name="mission_menu_hint">Сформулюйте, ким ви хочете бути і що для вас найважливіше.</string>
+    <string name="mission_intro">«Починайте, маючи на меті кінцевий результат». Особиста місія — це ваша конституція: принципи, цінності й те, ким ви хочете бути. Нею ви звіряєте кожне рішення та план на тиждень.</string>
+    <string name="mission_questions">• Яким я хочу, щоб мене памʼятали?\n• Які цінності для мене найважливіші?\n• Ким я хочу бути в кожній зі своїх ролей?\n• Що я робив би, якби не міг зазнати невдачі?</string>
+    <string name="mission_placeholder">Моя місія…</string>
+    <string name="roles_title">Ролі та цілі</string>
+    <string name="roles_menu_hint">Ролей: %1$d, активних цілей: %2$d</string>
+    <string name="roles_intro">Ролі — це сфери вашого життя: сімʼянин, друг, фахівець, лідер. Для кожної ставте цілі на тиждень і довгострокові цілі, щоб жодна важлива сфера не залишилася без уваги.</string>
+    <string name="roles_empty">Ролей ще немає.</string>
+    <string name="add_week_goal">Ціль на тиждень</string>
+    <string name="add_long_goal">Довгострокова</string>
+    <string name="guide_title">7 звичок</string>
+    <string name="guide_menu_hint">Коротко про принципи Стівена Кові.</string>
+    <string name="settings_title">Налаштування</string>
+    <string name="settings_menu_hint">Тема, мова, резервна копія.</string>
+    <string name="settings_theme">Тема</string>
+    <string name="theme_system">Як у системі</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="settings_language">Мова</string>
+    <string name="language_system">Як у системі</string>
+    <string name="settings_data">Дані</string>
+    <string name="settings_data_hint">Усі дані зберігаються лише на цьому телефоні. Регулярно робіть резервну копію у файл.</string>
+    <string name="export">Експорт</string>
+    <string name="import_data">Імпорт</string>
+    <string name="import_confirm">Імпорт замінить усі поточні дані вмістом файлу. Продовжити?</string>
+    <string name="export_ok">Резервну копію збережено</string>
+    <string name="import_ok">Дані відновлено</string>
+    <string name="file_error">Не вдалося обробити файл</string>
+    <string name="about_version">Компас %1$s · за книгою Стівена Кові «7 звичок надзвичайно ефективних людей»</string>
+
+    <!-- Editors -->
+    <string name="task_new">Нова задача</string>
+    <string name="task_edit">Задача</string>
+    <string name="field_title">Назва</string>
+    <string name="field_notes">Нотатки</string>
+    <string name="label_when">Коли</string>
+    <string name="no_date">Без дати</string>
+    <string name="no_date_inbox">Без дати</string>
+    <string name="add_time">Час</string>
+    <string name="label_role_goal">Роль і ціль</string>
+    <string name="field_role">Роль</string>
+    <string name="field_goal">Ціль</string>
+    <string name="label_priority">Пріоритет</string>
+    <string name="important">Важливо</string>
+    <string name="urgent">Терміново</string>
+    <string name="label_color">Колір</string>
+    <string name="color_auto_short">A</string>
+    <string name="color_auto_hint">«A» — колір береться з цілі або ролі.</string>
+    <string name="label_reminder">Нагадування</string>
+    <string name="reminder_enable">Нагадати</string>
+    <string name="reminder_past">Цей час уже минув — оберіть інший.</string>
+    <string name="delete_task_confirm">Видалити цю задачу?</string>
+    <string name="goal_new">Нова ціль</string>
+    <string name="goal_edit">Ціль</string>
+    <string name="field_goal_title">Ціль</string>
+    <string name="field_goal_why">Чому це важливо?</string>
+    <string name="label_horizon">Горизонт</string>
+    <string name="goal_weekly">На тиждень</string>
+    <string name="goal_long_term">Довгострокова</string>
+    <string name="goal_done">Ціль досягнута</string>
+    <string name="delete_goal_confirm">Видалити цю ціль? Повʼязані задачі залишаться.</string>
+    <string name="role_new">Нова роль</string>
+    <string name="role_edit">Роль</string>
+    <string name="role_examples">Наприклад: Чоловік / Дружина, Батько / Мати, Друг, Фахівець, Керівник, Студент.</string>
+    <string name="field_role_name">Назва ролі</string>
+    <string name="field_role_desc">Ким я хочу бути в цій ролі?</string>
+    <string name="delete_role_confirm">Видалити цю роль? Цілі й задачі залишаться без ролі.</string>
+    <string name="delete_habit_confirm">Видалити цю звичку разом з історією?</string>
+    <string name="delete_entry_confirm">Видалити цей запис?</string>
+
+    <!-- Notifications -->
+    <string name="channel_reminders">Нагадування</string>
+    <string name="notif_task">Час для запланованої задачі</string>
+    <string name="notif_goal">Нагадування про вашу ціль</string>
+    <string name="notif_habit">Не забудьте про свою звичку сьогодні</string>
+
+    <!-- First launch -->
+    <string name="seed_role_saw">Заточування пили</string>
+    <string name="seed_role_saw_desc">Оновлення себе у чотирьох вимірах: фізичному, ментальному, соціально-емоційному та духовному.</string>
+
+    <!-- Guide -->
+    <string name="habit1_title">Будьте проактивними</string>
+    <string name="habit1_text">Між подією і реакцією є простір вибору. Ви відповідаєте за свої рішення. Зосередьтеся на колі впливу — на тому, що можете змінити, — замість кола турбот.</string>
+    <string name="habit2_title">Починайте з кінцевою метою</string>
+    <string name="habit2_text">Уявіть, яким хочете бути, і сформулюйте особисту місію. Вона стає компасом для всіх ролей, цілей і щоденних рішень.</string>
+    <string name="habit3_title">Спершу робіть найважливіше</string>
+    <string name="habit3_text">Керуйте собою, а не часом. Плануйте тиждень за ролями, ставте «великі камені» першими і проводьте більше часу в квадранті II — важливому, але не терміновому.</string>
+    <string name="habit4_title">Думайте в дусі «виграш — виграш»</string>
+    <string name="habit4_text">Шукайте рішення, вигідні всім сторонам. Ефективні стосунки будуються на довірі та взаємній вигоді, а не на суперництві.</string>
+    <string name="habit5_title">Спершу зрозумійте, потім будьте зрозумілими</string>
+    <string name="habit5_text">Слухайте з наміром зрозуміти, а не відповісти. Емпатійне слухання відкриває шлях до справжнього порозуміння.</string>
+    <string name="habit6_title">Досягайте синергії</string>
+    <string name="habit6_text">Цінуйте відмінності. Разом люди можуть створити рішення, краще за те, що кожен знайшов би самостійно.</string>
+    <string name="habit7_title">Заточуйте пилу</string>
+    <string name="habit7_text">Регулярно оновлюйте себе фізично, ментально, соціально-емоційно та духовно. Це звичка, що підтримує всі інші.</string>
+    <string name="guide_app_title">Як користуватися Компасом</string>
+    <string name="guide_app_text">1. Запишіть особисту місію.\n2. Визначте ролі та поставте цілі на тиждень для кожної.\n3. На початку тижня розкладіть задачі по днях; незаплановане тримайте в «Без дати».\n4. Щось не вийшло — просто перетягніть задачу на інший день.\n5. Перевіряйте матрицю: що з квадранту II можна зробити вже сьогодні?\n6. Увечері — кілька рядків у щоденник і позначки у звичках.</string>
+</resources>

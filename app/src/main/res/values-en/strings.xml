@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Compass</string>
+
+    <string name="tab_planner">Calendar</string>
+    <string name="tab_matrix">Matrix</string>
+    <string name="tab_habits">Habits</string>
+    <string name="tab_journal">Journal</string>
+    <string name="tab_more">More</string>
+
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="ok">OK</string>
+    <string name="back">Back</string>
+    <string name="clear">Clear</string>
+    <string name="none">None</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
+    <string name="drag">Drag</string>
+    <string name="autosave_hint">Saved automatically.</string>
+
+    <string name="mode_day">Day</string>
+    <string name="mode_week">Week</string>
+    <string name="mode_month">Month</string>
+    <string name="inbox">No date</string>
+    <string name="inbox_empty">Tasks without a date live here. Drag them onto a day.</string>
+    <string name="day_empty">Empty. Drag a task here or tap +</string>
+    <string name="day_empty_simple">No tasks on this day.</string>
+    <string name="day_tasks">Tasks for the day</string>
+    <string name="add_task">Add task</string>
+    <string name="add_task_for_goal">Task for this goal</string>
+    <string name="open_day">Open day</string>
+    <string name="overdue_count">Unfinished tasks from past days: %1$d</string>
+    <string name="move_to_today">Move to today</string>
+    <string name="week_goals">Roles &amp; goals this week</string>
+    <string name="week_goals_no_roles">Start by defining your roles: who you are for others and for yourself.</string>
+    <string name="week_goals_hint">Put the big rocks in first: set 1–2 goals for each role and schedule them into days.</string>
+    <string name="habits_for_day">Habits</string>
+    <string name="add_goal">Add goal</string>
+    <string name="add_role">Add role</string>
+    <string name="no_role">No role</string>
+
+    <string name="matrix_title">Eisenhower matrix</string>
+    <string name="matrix_hint">Hold a task to drag it into another quadrant. Quadrant II is where effectiveness lives.</string>
+    <string name="q1_title">Important and urgent</string>
+    <string name="q2_title">Important, not urgent</string>
+    <string name="q3_title">Urgent, not important</string>
+    <string name="q4_title">Neither important nor urgent</string>
+    <string name="q1_action">Do</string>
+    <string name="q2_action">Schedule</string>
+    <string name="q3_action">Delegate</string>
+    <string name="q4_action">Drop</string>
+    <string name="q1_hint">Quadrant I: crises and deadlines. Do it as soon as possible.</string>
+    <string name="q2_hint">Quadrant II: growth, relationships, planning. This is where effectiveness is born.</string>
+    <string name="q3_hint">Quadrant III: other people\'s priorities and interruptions. Delegate or cut down.</string>
+    <string name="q4_hint">Quadrant IV: time wasters. Is it worth doing at all?</string>
+
+    <string name="habits_title">Habit tracker</string>
+    <string name="habits_intro">Check off each day. Small daily steps are how you sharpen the saw.</string>
+    <string name="habits_empty">No habits yet. Add your first one, like “Morning run” or “Read for 20 minutes”.</string>
+    <string name="add_habit">Add habit</string>
+    <string name="habit_last30">Last 30 days: %1$d</string>
+    <string name="habit_new">New habit</string>
+    <string name="habit_edit">Habit</string>
+    <string name="field_habit_name">Habit name</string>
+    <string name="habit_placeholder">For example: Read for 20 minutes</string>
+    <string name="habit_reminder_daily">Remind me daily</string>
+
+    <string name="journal_title">Journal</string>
+    <string name="journal_today">Today\'s entry</string>
+    <string name="journal_empty">Your journal is empty. Sum up the day: what went well, what you learned, what to change tomorrow.</string>
+    <string name="journal_prompts_label">Prompts for reflection</string>
+    <string name="journal_placeholder">How was your day?</string>
+    <string-array name="journal_prompts">
+        <item>What mattered most today?</item>
+        <item>Did I act in line with my mission?</item>
+        <item>Which role did I live best today?</item>
+        <item>What am I grateful for?</item>
+        <item>How will I sharpen the saw tomorrow?</item>
+    </string-array>
+
+    <string name="mission_title">Personal mission</string>
+    <string name="mission_menu_hint">Write down who you want to be and what matters most to you.</string>
+    <string name="mission_intro">“Begin with the end in mind.” A personal mission statement is your constitution: the principles, values and character you choose. Check every decision and weekly plan against it.</string>
+    <string name="mission_questions">• How do I want to be remembered?\n• Which values matter most to me?\n• Who do I want to be in each of my roles?\n• What would I do if I could not fail?</string>
+    <string name="mission_placeholder">My mission…</string>
+    <string name="roles_title">Roles &amp; goals</string>
+    <string name="roles_menu_hint">Roles: %1$d, active goals: %2$d</string>
+    <string name="roles_intro">Roles are the areas of your life: partner, parent, friend, professional, leader. Give each one weekly and long-term goals so that no important area is left without attention.</string>
+    <string name="roles_empty">No roles yet.</string>
+    <string name="add_week_goal">Weekly goal</string>
+    <string name="add_long_goal">Long-term</string>
+    <string name="guide_title">The 7 habits</string>
+    <string name="guide_menu_hint">Stephen Covey\'s principles in brief.</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_menu_hint">Theme, language, backup.</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_language">Language</string>
+    <string name="language_system">System default</string>
+    <string name="settings_data">Data</string>
+    <string name="settings_data_hint">All data is stored only on this phone. Back it up to a file regularly.</string>
+    <string name="export">Export</string>
+    <string name="import_data">Import</string>
+    <string name="import_confirm">Importing replaces all current data with the file\'s contents. Continue?</string>
+    <string name="export_ok">Backup saved</string>
+    <string name="import_ok">Data restored</string>
+    <string name="file_error">Could not process the file</string>
+    <string name="about_version">Compass %1$s · based on Stephen Covey\'s “The 7 Habits of Highly Effective People”</string>
+
+    <string name="task_new">New task</string>
+    <string name="task_edit">Task</string>
+    <string name="field_title">Title</string>
+    <string name="field_notes">Notes</string>
+    <string name="label_when">When</string>
+    <string name="no_date">No date</string>
+    <string name="no_date_inbox">No date</string>
+    <string name="add_time">Time</string>
+    <string name="label_role_goal">Role and goal</string>
+    <string name="field_role">Role</string>
+    <string name="field_goal">Goal</string>
+    <string name="label_priority">Priority</string>
+    <string name="important">Important</string>
+    <string name="urgent">Urgent</string>
+    <string name="label_color">Color</string>
+    <string name="color_auto_short">A</string>
+    <string name="color_auto_hint">“A” uses the color of the goal or role.</string>
+    <string name="label_reminder">Reminder</string>
+    <string name="reminder_enable">Remind me</string>
+    <string name="reminder_past">This time has already passed. Pick another one.</string>
+    <string name="delete_task_confirm">Delete this task?</string>
+    <string name="goal_new">New goal</string>
+    <string name="goal_edit">Goal</string>
+    <string name="field_goal_title">Goal</string>
+    <string name="field_goal_why">Why does it matter?</string>
+    <string name="label_horizon">Horizon</string>
+    <string name="goal_weekly">This week</string>
+    <string name="goal_long_term">Long-term</string>
+    <string name="goal_done">Goal achieved</string>
+    <string name="delete_goal_confirm">Delete this goal? Linked tasks will stay.</string>
+    <string name="role_new">New role</string>
+    <string name="role_edit">Role</string>
+    <string name="role_examples">For example: Partner, Parent, Friend, Professional, Manager, Student.</string>
+    <string name="field_role_name">Role name</string>
+    <string name="field_role_desc">Who do I want to be in this role?</string>
+    <string name="delete_role_confirm">Delete this role? Its goals and tasks will be kept without a role.</string>
+    <string name="delete_habit_confirm">Delete this habit and its history?</string>
+    <string name="delete_entry_confirm">Delete this entry?</string>
+
+    <string name="channel_reminders">Reminders</string>
+    <string name="notif_task">Time for a planned task</string>
+    <string name="notif_goal">A reminder about your goal</string>
+    <string name="notif_habit">Don\'t forget your habit today</string>
+
+    <string name="seed_role_saw">Sharpen the saw</string>
+    <string name="seed_role_saw_desc">Renewing yourself in four dimensions: physical, mental, social-emotional and spiritual.</string>
+
+    <string name="habit1_title">Be proactive</string>
+    <string name="habit1_text">Between stimulus and response there is a space to choose. You are responsible for your choices. Focus on your circle of influence, the things you can change, rather than your circle of concern.</string>
+    <string name="habit2_title">Begin with the end in mind</string>
+    <string name="habit2_text">Picture who you want to become and write a personal mission statement. It becomes the compass for every role, goal and daily decision.</string>
+    <string name="habit3_title">Put first things first</string>
+    <string name="habit3_text">Manage yourself, not time. Plan your week by roles, put the big rocks in first and spend more time in Quadrant II: important but not urgent.</string>
+    <string name="habit4_title">Think win-win</string>
+    <string name="habit4_text">Look for solutions that benefit everyone. Effective relationships are built on trust and mutual benefit, not competition.</string>
+    <string name="habit5_title">Seek first to understand, then to be understood</string>
+    <string name="habit5_text">Listen with the intent to understand, not to reply. Empathic listening opens the way to real understanding.</string>
+    <string name="habit6_title">Synergize</string>
+    <string name="habit6_text">Value differences. Together, people can create solutions better than any one of them would find alone.</string>
+    <string name="habit7_title">Sharpen the saw</string>
+    <string name="habit7_text">Renew yourself regularly: physically, mentally, socially-emotionally and spiritually. This is the habit that sustains all the others.</string>
+    <string name="guide_app_title">How to use Compass</string>
+    <string name="guide_app_text">1. Write your personal mission.\n2. Define your roles and set weekly goals for each.\n3. At the start of the week, spread tasks across the days; keep the unplanned ones under “No date”.\n4. Didn\'t get to something? Just drag the task to another day.\n5. Check the matrix: what from Quadrant II can you do today?\n6. In the evening, write a few lines in the journal and check off your habits.</string>
+</resources>
