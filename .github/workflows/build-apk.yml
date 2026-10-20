@@ -4,6 +4,9 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     # This image ships with the Android SDK preinstalled.
@@ -18,7 +21,16 @@ jobs:
         with:
           gradle-version: 8.11.1
       - run: gradle :app:assembleRelease --no-daemon --stacktrace
+      - run: mv app/build/outputs/apk/release/app-release.apk Compass.apk
       - uses: actions/upload-artifact@v4
         with:
           name: compass-apk
-          path: app/build/outputs/apk/release/*.apk
+          path: Compass.apk
+      # A release gives a direct .apk link that opens straight from the phone.
+      - uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Compass (build ${{ github.run_number }})
+          make_latest: true
+          files: Compass.apk
