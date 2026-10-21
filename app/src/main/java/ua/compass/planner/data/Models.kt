@@ -1,7 +1,10 @@
 package ua.compass.planner.data
 
 import kotlinx.serialization.Serializable
+import ua.compass.planner.util.Dates
+import java.time.DayOfWeek
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 
 object Palette {
@@ -29,8 +32,10 @@ data class Goal(
     val notes: String = "",
     val roleId: Long? = null,
     val color: Long = Palette.DEFAULT,
-    /** Epoch day of the week's Monday; null means a long-term goal. */
+    /** Epoch day inside the goal's week (normally its first day). Set for weekly goals. */
     val weekStart: Long? = null,
+    /** Month index (year * 12 + month - 1). Set for monthly goals. */
+    val month: Int? = null,
     val done: Boolean = false,
     val reminderAt: Long? = null,
 )
@@ -83,6 +88,19 @@ data class AppData(
     val journal: List<JournalEntry> = emptyList(),
     val seeded: Boolean = false,
 )
+
+enum class Horizon { WEEK, MONTH, LONG }
+
+val Goal.horizon: Horizon
+    get() = when {
+        weekStart != null -> Horizon.WEEK
+        month != null -> Horizon.MONTH
+        else -> Horizon.LONG
+    }
+
+/** Whether this weekly goal belongs to the week starting on [start]. */
+fun Goal.inWeek(start: LocalDate, firstDay: DayOfWeek): Boolean =
+    weekStart?.let { Dates.weekStart(LocalDate.ofEpochDay(it), firstDay) == start } ?: false
 
 enum class Quadrant(val important: Boolean, val urgent: Boolean) {
     I(true, true), II(true, false), III(false, true), IV(false, false)

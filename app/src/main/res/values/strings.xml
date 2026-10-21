@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Компас</string>
+    <string name="app_name">Мій Особистий Компас</string>
 
     <!-- Tabs -->
     <string name="tab_planner">Календар</string>
@@ -39,7 +39,7 @@
     <string name="open_day">Відкрити день</string>
     <string name="overdue_count">Невиконаних задач з минулих днів: %1$d</string>
     <string name="move_to_today">На сьогодні</string>
-    <string name="week_goals">Ролі та цілі тижня</string>
+    <string name="week_goals">Цілі тижня</string>
     <string name="week_goals_no_roles">Спершу визначте свої ролі: хто ви для інших і для себе.</string>
     <string name="week_goals_hint">Почніть тиждень із «великих каменів»: поставте 1–2 цілі для кожної ролі й заплануйте їх у дні.</string>
     <string name="habits_for_day">Звички</string>
@@ -97,7 +97,7 @@
     <string name="mission_placeholder">Моя місія…</string>
     <string name="roles_title">Ролі та цілі</string>
     <string name="roles_menu_hint">Ролей: %1$d, активних цілей: %2$d</string>
-    <string name="roles_intro">Ролі — це сфери вашого життя: сімʼянин, друг, фахівець, лідер. Для кожної ставте цілі на тиждень і довгострокові цілі, щоб жодна важлива сфера не залишилася без уваги.</string>
+    <string name="roles_intro">Ролі — це сфери вашого життя: сімʼянин, друг, фахівець, лідер. Це ваша основа: ставлячи ціль, вкажіть роль, якій вона служить, щоб жодна важлива сфера не залишилася без уваги.</string>
     <string name="roles_empty">Ролей ще немає.</string>
     <string name="add_week_goal">Ціль на тиждень</string>
     <string name="add_long_goal">Довгострокова</string>
@@ -119,7 +119,7 @@
     <string name="export_ok">Резервну копію збережено</string>
     <string name="import_ok">Дані відновлено</string>
     <string name="file_error">Не вдалося обробити файл</string>
-    <string name="about_version">Компас %1$s · за книгою Стівена Кові «7 звичок надзвичайно ефективних людей»</string>
+    <string name="about_version">Мій Особистий Компас %1$s · за книгою Стівена Кові «7 звичок надзвичайно ефективних людей»</string>
 
     <!-- Editors -->
     <string name="task_new">Нова задача</string>
@@ -186,6 +186,35 @@
     <string name="habit6_text">Цінуйте відмінності. Разом люди можуть створити рішення, краще за те, що кожен знайшов би самостійно.</string>
     <string name="habit7_title">Заточуйте пилу</string>
     <string name="habit7_text">Регулярно оновлюйте себе фізично, ментально, соціально-емоційно та духовно. Це звичка, що підтримує всі інші.</string>
-    <string name="guide_app_title">Як користуватися Компасом</string>
-    <string name="guide_app_text">1. Запишіть особисту місію.\n2. Визначте ролі та поставте цілі на тиждень для кожної.\n3. На початку тижня розкладіть задачі по днях; незаплановане тримайте в «Без дати».\n4. Щось не вийшло — просто перетягніть задачу на інший день.\n5. Перевіряйте матрицю: що з квадранту II можна зробити вже сьогодні?\n6. Увечері — кілька рядків у щоденник і позначки у звичках.</string>
+    <string name="guide_app_title">Як користуватися застосунком</string>
+    <string name="guide_app_text">1. Запишіть особисту місію.\n2. Визначте свої ролі (меню ☰ → Ролі).\n3. У розділі «Цілі» поставте цілі на тиждень і місяць та додайте до них задачі.\n4. На початку тижня розкладіть задачі по днях; незаплановане тримайте в «Без дати».\n5. Щось не вийшло — просто перетягніть задачу на інший день.\n6. Перевіряйте матрицю: що з квадранту II можна зробити вже сьогодні?\n7. Увечері — кілька рядків у щоденник і позначки у звичках.</string>
+
+    <!-- Version 2 -->
+    <string name="nav_calendar">Календар</string>
+    <string name="nav_goals">Цілі</string>
+    <string name="nav_matrix">Матриця</string>
+    <string name="nav_habits">Звички</string>
+    <string name="nav_journal">Щоденник</string>
+    <string name="nav_mission">Особиста місія</string>
+    <string name="nav_roles">Ролі</string>
+    <string name="nav_guide">7 звичок</string>
+    <string name="nav_settings">Налаштування</string>
+    <string name="open_menu">Відкрити меню</string>
+    <string name="goals_title">Цілі</string>
+    <string name="goals_intro">Ставте цілі на тиждень, місяць або довгострокові. Розгорніть ціль, щоб побачити її задачі та додати нові — вони зʼявляться в календарі, де їх можна перетягувати між днями.</string>
+    <string name="goals_empty">На цей період цілей немає. Натисніть +, щоб додати.</string>
+    <string name="horizon_week">Тиждень</string>
+    <string name="horizon_month">Місяць</string>
+    <string name="horizon_long">Довгострокові</string>
+    <string name="month_goals">Цілі місяця</string>
+    <string name="period_goals_empty">Цілей ще немає. Натисніть +, щоб додати.</string>
+    <string name="goal_no_tasks">Задач ще немає</string>
+    <string name="goal_tasks_progress">Задачі: %1$d з %2$d</string>
+    <string name="role_goals_count">Активних цілей: %1$d · досягнуто: %2$d</string>
+    <string name="settings_first_day">Перший день тижня</string>
+    <string name="monday">Понеділок</string>
+    <string name="sunday">Неділя</string>
+    <string name="habit_show_month">Календар місяця</string>
+    <string name="habit_hide_month">Згорнути</string>
+    <string name="habit_month_count">Цього місяця: %1$d з %2$d днів</string>
 </resources>

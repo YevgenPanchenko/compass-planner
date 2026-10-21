@@ -1,12 +1,16 @@
 package ua.compass.planner.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.platform.LocalConfiguration
+import java.time.DayOfWeek
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 object Dates {
@@ -14,7 +18,12 @@ object Dates {
 
     fun todayEpoch(): Long = LocalDate.now().toEpochDay()
 
-    fun weekStart(date: LocalDate): LocalDate = date.minusDays((date.dayOfWeek.value - 1).toLong())
+    fun weekStart(date: LocalDate, firstDay: DayOfWeek): LocalDate =
+        date.with(TemporalAdjusters.previousOrSame(firstDay))
+
+    fun monthIndex(month: YearMonth): Int = month.year * 12 + month.monthValue - 1
+
+    fun yearMonth(index: Int): YearMonth = YearMonth.of(Math.floorDiv(index, 12), Math.floorMod(index, 12) + 1)
 
     fun time(minutes: Int): String = "%02d:%02d".format(Locale.ROOT, minutes / 60, minutes % 60)
 
@@ -34,3 +43,6 @@ object Dates {
 
 @Composable
 fun currentLocale(): Locale = LocalConfiguration.current.locales[0]
+
+/** First day of the week chosen in the settings. */
+val LocalFirstDayOfWeek = staticCompositionLocalOf { DayOfWeek.MONDAY }

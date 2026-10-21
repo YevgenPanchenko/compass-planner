@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Compass</string>
+    <string name="app_name">My Personal Compass</string>
 
     <string name="tab_planner">Calendar</string>
     <string name="tab_matrix">Matrix</string>
@@ -36,7 +36,7 @@
     <string name="open_day">Open day</string>
     <string name="overdue_count">Unfinished tasks from past days: %1$d</string>
     <string name="move_to_today">Move to today</string>
-    <string name="week_goals">Roles &amp; goals this week</string>
+    <string name="week_goals">Goals this week</string>
     <string name="week_goals_no_roles">Start by defining your roles: who you are for others and for yourself.</string>
     <string name="week_goals_hint">Put the big rocks in first: set 1–2 goals for each role and schedule them into days.</string>
     <string name="habits_for_day">Habits</string>
@@ -90,7 +90,7 @@
     <string name="mission_placeholder">My mission…</string>
     <string name="roles_title">Roles &amp; goals</string>
     <string name="roles_menu_hint">Roles: %1$d, active goals: %2$d</string>
-    <string name="roles_intro">Roles are the areas of your life: partner, parent, friend, professional, leader. Give each one weekly and long-term goals so that no important area is left without attention.</string>
+    <string name="roles_intro">Roles are the areas of your life: partner, parent, friend, professional, leader. They are your foundation: when you set a goal, pick the role it serves so that no important area is left without attention.</string>
     <string name="roles_empty">No roles yet.</string>
     <string name="add_week_goal">Weekly goal</string>
     <string name="add_long_goal">Long-term</string>
@@ -112,7 +112,7 @@
     <string name="export_ok">Backup saved</string>
     <string name="import_ok">Data restored</string>
     <string name="file_error">Could not process the file</string>
-    <string name="about_version">Compass %1$s · based on Stephen Covey\'s “The 7 Habits of Highly Effective People”</string>
+    <string name="about_version">My Personal Compass %1$s · based on Stephen Covey\'s “The 7 Habits of Highly Effective People”</string>
 
     <string name="task_new">New task</string>
     <string name="task_edit">Task</string>
@@ -175,6 +175,35 @@
     <string name="habit6_text">Value differences. Together, people can create solutions better than any one of them would find alone.</string>
     <string name="habit7_title">Sharpen the saw</string>
     <string name="habit7_text">Renew yourself regularly: physically, mentally, socially-emotionally and spiritually. This is the habit that sustains all the others.</string>
-    <string name="guide_app_title">How to use Compass</string>
-    <string name="guide_app_text">1. Write your personal mission.\n2. Define your roles and set weekly goals for each.\n3. At the start of the week, spread tasks across the days; keep the unplanned ones under “No date”.\n4. Didn\'t get to something? Just drag the task to another day.\n5. Check the matrix: what from Quadrant II can you do today?\n6. In the evening, write a few lines in the journal and check off your habits.</string>
+    <string name="guide_app_title">How to use the app</string>
+    <string name="guide_app_text">1. Write your personal mission.\n2. Define your roles (menu ☰ → Roles).\n3. In Goals, set goals for the week and the month and add tasks to them.\n4. At the start of the week, spread tasks across the days; keep the unplanned ones under “No date”.\n5. Didn\'t get to something? Just drag the task to another day.\n6. Check the matrix: what from Quadrant II can you do today?\n7. In the evening, write a few lines in the journal and check off your habits.</string>
+
+    <!-- Version 2 -->
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_goals">Goals</string>
+    <string name="nav_matrix">Matrix</string>
+    <string name="nav_habits">Habits</string>
+    <string name="nav_journal">Journal</string>
+    <string name="nav_mission">Personal mission</string>
+    <string name="nav_roles">Roles</string>
+    <string name="nav_guide">The 7 habits</string>
+    <string name="nav_settings">Settings</string>
+    <string name="open_menu">Open menu</string>
+    <string name="goals_title">Goals</string>
+    <string name="goals_intro">Set goals for the week, the month or the long term. Expand a goal to see its tasks and add new ones. They appear in the calendar, where you can drag them between days.</string>
+    <string name="goals_empty">No goals for this period. Tap + to add one.</string>
+    <string name="horizon_week">Week</string>
+    <string name="horizon_month">Month</string>
+    <string name="horizon_long">Long-term</string>
+    <string name="month_goals">Goals this month</string>
+    <string name="period_goals_empty">No goals yet. Tap + to add one.</string>
+    <string name="goal_no_tasks">No tasks yet</string>
+    <string name="goal_tasks_progress">Tasks: %1$d of %2$d</string>
+    <string name="role_goals_count">Active goals: %1$d · achieved: %2$d</string>
+    <string name="settings_first_day">First day of the week</string>
+    <string name="monday">Monday</string>
+    <string name="sunday">Sunday</string>
+    <string name="habit_show_month">Month calendar</string>
+    <string name="habit_hide_month">Collapse</string>
+    <string name="habit_month_count">This month: %1$d of %2$d days</string>
 </resources>

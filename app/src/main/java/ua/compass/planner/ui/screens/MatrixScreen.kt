@@ -41,6 +41,7 @@ import ua.compass.planner.data.Quadrant
 import ua.compass.planner.data.Task
 import ua.compass.planner.data.quadrant
 import ua.compass.planner.ui.AppViewModel
+import ua.compass.planner.ui.components.DrawerButton
 import ua.compass.planner.ui.components.taskColor
 import ua.compass.planner.ui.theme.quadrantColor
 import ua.compass.planner.util.Dates
@@ -90,7 +91,7 @@ fun MatrixScreen(vm: AppViewModel) {
 
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.matrix_title)) }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.matrix_title)) }, navigationIcon = { DrawerButton() }) },
     ) { pad ->
         Box(
             Modifier

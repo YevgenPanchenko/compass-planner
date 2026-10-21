@@ -17,10 +17,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +36,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import ua.compass.planner.R
 import ua.compass.planner.data.Goal
+import ua.compass.planner.data.Horizon
+import ua.compass.planner.data.horizon
 import ua.compass.planner.data.Palette
 import ua.compass.planner.data.Quadrant
 import ua.compass.planner.data.Role
@@ -42,6 +46,7 @@ import ua.compass.planner.data.quadrant
 import ua.compass.planner.reminders.Notifications
 import ua.compass.planner.ui.theme.quadrantColor
 import ua.compass.planner.util.Dates
+import ua.compass.planner.util.LocalFirstDayOfWeek
 import ua.compass.planner.util.currentLocale
 import java.time.LocalDate
 
@@ -160,8 +165,24 @@ fun ColorDot(color: Color, size: Int = 12) {
 }
 
 @Composable
-fun GoalLine(goal: Goal, onToggle: () -> Unit, onClick: () -> Unit, trailing: @Composable (() -> Unit)? = null) {
+fun goalPeriodLabel(goal: Goal): String {
     val locale = currentLocale()
+    val firstDay = LocalFirstDayOfWeek.current
+    return when (goal.horizon) {
+        Horizon.WEEK -> Dates.weekRange(Dates.weekStart(LocalDate.ofEpochDay(goal.weekStart!!), firstDay), locale)
+        Horizon.MONTH -> Dates.format(Dates.yearMonth(goal.month!!).atDay(1), "LLLL yyyy", locale)
+        Horizon.LONG -> stringResource(R.string.goal_long_term)
+    }
+}
+
+@Composable
+fun GoalLine(
+    goal: Goal,
+    onToggle: () -> Unit,
+    onClick: () -> Unit,
+    subtitle: String = goalPeriodLabel(goal),
+    trailing: @Composable (() -> Unit)? = null,
+) {
     val scheme = MaterialTheme.colorScheme
     Row(
         Modifier
@@ -182,16 +203,100 @@ fun GoalLine(goal: Goal, onToggle: () -> Unit, onClick: () -> Unit, trailing: @C
                 textDecoration = if (goal.done) TextDecoration.LineThrough else null,
                 color = if (goal.done) scheme.onSurfaceVariant else scheme.onSurface,
             )
-            val week = goal.weekStart
-            Text(
-                if (week == null) stringResource(R.string.goal_long_term)
-                else Dates.weekRange(LocalDate.ofEpochDay(week), locale),
-                style = MaterialTheme.typography.labelSmall,
-                color = scheme.onSurfaceVariant,
-            )
+            Text(subtitle, style = MaterialTheme.typography.labelSmall, color = scheme.onSurfaceVariant)
         }
         trailing?.invoke()
     }
+}
+
+/** "Goals of the week/month" card shown above the calendar. */
+@Composable
+fun PeriodGoalsCard(
+    title: String,
+    goals: List<Goal>,
+    tasks: List<Task>,
+    onAddGoal: () -> Unit,
+    onToggle: (Goal) -> Unit,
+    onEdit: (Goal) -> Unit,
+    onAddTask: (Goal) -> Unit,
+) {
+    var expanded by rememberSaveable(title) { mutableStateOf(true) }
+    SectionCard {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .clickable { expanded = !expanded },
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Icon(Icons.Rounded.Flag, null, tint = MaterialTheme.colorScheme.primary)
+            Spacer(Modifier.width(10.dp))
+            Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+            if (goals.isNotEmpty()) {
+                Text(
+                    "${goals.count { it.done }}/${goals.size}",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+            IconButton(onClick = onAddGoal, modifier = Modifier.size(36.dp)) {
+                Icon(Icons.Rounded.Add, stringResource(R.string.add_goal))
+            }
+            Icon(if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore, null)
+        }
+        if (!expanded) return@SectionCard
+        if (goals.isEmpty()) {
+            Text(
+                stringResource(R.string.period_goals_empty),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(top = 4.dp),
+            )
+        }
+        goals.sortedBy { it.done }.forEach { goal ->
+            GoalLine(
+                goal = goal,
+                onToggle = { onToggle(goal) },
+                onClick = { onEdit(goal) },
+                subtitle = goalTasksLabel(goal, tasks),
+                trailing = {
+                    IconButton(onClick = { onAddTask(goal) }) {
+                        Icon(Icons.Rounded.AddTask, stringResource(R.string.add_task_for_goal), Modifier.size(20.dp))
+                    }
+                },
+            )
+        }
+    }
+}
+
+@Composable
+fun goalTasksLabel(goal: Goal, tasks: List<Task>): String {
+    val own = tasks.filter { it.goalId == goal.id }
+    return if (own.isEmpty()) stringResource(R.string.goal_no_tasks)
+    else stringResource(R.string.goal_tasks_progress, own.count { it.done }, own.size)
+}
+
+@Composable
+fun PeriodNavigator(label: String, onPrev: () -> Unit, onNext: () -> Unit, modifier: Modifier = Modifier) {
+    Row(modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = onPrev) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, stringResource(R.string.previous)) }
+        Text(
+            label,
+            style = MaterialTheme.typography.titleSmall,
+            modifier = Modifier.weight(1f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        )
+        IconButton(onClick = onNext) { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, stringResource(R.string.next)) }
+    }
+}
+
+/** Opens the side menu; provided by the main screen. */
+val LocalOpenDrawer = staticCompositionLocalOf<() -> Unit> { {} }
+
+@Composable
+fun DrawerButton() {
+    val open = LocalOpenDrawer.current
+    IconButton(onClick = open) { Icon(Icons.Rounded.Menu, stringResource(R.string.open_menu)) }
 }
 
 @Composable
@@ -237,7 +342,6 @@ fun FieldLabel(text: String) {
 @Composable
 fun SubScaffold(
     title: String,
-    onBack: () -> Unit,
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
@@ -246,11 +350,7 @@ fun SubScaffold(
         topBar = {
             TopAppBar(
                 title = { Text(title) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.back))
-                    }
-                },
+                navigationIcon = { DrawerButton() },
             )
         },
         floatingActionButton = floatingActionButton,

@@ -10,6 +10,8 @@ import ua.compass.planner.CompassApp
 import ua.compass.planner.data.AppData
 import ua.compass.planner.data.Goal
 import ua.compass.planner.data.Habit
+import ua.compass.planner.data.Horizon
+import ua.compass.planner.data.horizon
 import ua.compass.planner.data.JournalEntry
 import ua.compass.planner.data.Palette
 import ua.compass.planner.data.Quadrant
@@ -17,10 +19,14 @@ import ua.compass.planner.data.Role
 import ua.compass.planner.data.Task
 import ua.compass.planner.data.movedTo
 import ua.compass.planner.util.Dates
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.YearMonth
 
 sealed interface EditorRequest {
     data class TaskEdit(val task: Task) : EditorRequest
-    data class GoalEdit(val goal: Goal, val week: Long) : EditorRequest
+    /** [refDay] is the day whose week or month the editor offers by default. */
+    data class GoalEdit(val goal: Goal, val refDay: Long) : EditorRequest
     data class RoleEdit(val role: Role) : EditorRequest
     data class HabitEdit(val habit: Habit) : EditorRequest
     data class JournalEdit(val entry: JournalEntry) : EditorRequest
@@ -35,6 +41,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     val data: StateFlow<AppData> = repo.data
     val theme: StateFlow<String> = app.settings.theme
+    val firstDay: StateFlow<DayOfWeek> = app.settings.firstDay
     val language: String get() = app.settings.language
 
     private val _editor = MutableStateFlow<EditorRequest?>(null)
@@ -109,16 +116,44 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     // Goals
 
-    fun newGoal(roleId: Long?, week: Long, weekly: Boolean = true) {
-        val color = data.value.roles.firstOrNull { it.id == roleId }?.color ?: Palette.DEFAULT
+    fun newGoal(horizon: Horizon, refDay: Long) {
+        val ref = LocalDate.ofEpochDay(refDay)
+        val goals = data.value.goals
         _editor.value = EditorRequest.GoalEdit(
-            Goal(roleId = roleId, color = color, weekStart = if (weekly) week else null),
-            week,
+            Goal(
+                color = Palette.colors[goals.size % Palette.colors.size],
+                weekStart = if (horizon == Horizon.WEEK) Dates.weekStart(ref, firstDay.value).toEpochDay() else null,
+                month = if (horizon == Horizon.MONTH) Dates.monthIndex(YearMonth.from(ref)) else null,
+            ),
+            refDay,
         )
     }
 
-    fun editGoal(goal: Goal, week: Long) {
-        _editor.value = EditorRequest.GoalEdit(goal, week)
+    fun editGoal(goal: Goal) {
+        _editor.value = EditorRequest.GoalEdit(goal, goalStart(goal)?.toEpochDay() ?: Dates.todayEpoch())
+    }
+
+    /** Opens a new task for [goal], dated today when today falls inside the goal's period. */
+    fun newTaskForGoal(goal: Goal) {
+        val today = LocalDate.now()
+        val date = when (goal.horizon) {
+            Horizon.WEEK -> {
+                val start = Dates.weekStart(LocalDate.ofEpochDay(goal.weekStart!!), firstDay.value)
+                if (today.isBefore(start) || today.isAfter(start.plusDays(6))) start else today
+            }
+            Horizon.MONTH -> {
+                val month = Dates.yearMonth(goal.month!!)
+                if (YearMonth.from(today) == month) today else month.atDay(1)
+            }
+            Horizon.LONG -> null
+        }
+        newTask(date?.toEpochDay(), goal = goal)
+    }
+
+    private fun goalStart(goal: Goal): LocalDate? = when (goal.horizon) {
+        Horizon.WEEK -> Dates.weekStart(LocalDate.ofEpochDay(goal.weekStart!!), firstDay.value)
+        Horizon.MONTH -> Dates.yearMonth(goal.month!!).atDay(1)
+        Horizon.LONG -> null
     }
 
     fun saveGoal(goal: Goal) {
@@ -246,6 +281,8 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun setTheme(value: String) = app.settings.setTheme(value)
+
+    fun setFirstDay(day: DayOfWeek) = app.settings.setFirstDay(day)
 
     fun setLanguage(value: String) = app.settings.setLanguage(value)
 

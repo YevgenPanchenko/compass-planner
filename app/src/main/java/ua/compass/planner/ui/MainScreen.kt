@@ -1,46 +1,53 @@
 package ua.compass.planner.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Book
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.GridView
-import androidx.compose.material.icons.rounded.MoreHoriz
-import androidx.compose.material.icons.rounded.TaskAlt
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
 import ua.compass.planner.R
+import ua.compass.planner.ui.components.LocalOpenDrawer
 import ua.compass.planner.ui.editors.EditorHost
 import ua.compass.planner.ui.planner.PlannerScreen
+import ua.compass.planner.ui.screens.GoalsScreen
+import ua.compass.planner.ui.screens.GuideScreen
 import ua.compass.planner.ui.screens.HabitsScreen
 import ua.compass.planner.ui.screens.JournalScreen
 import ua.compass.planner.ui.screens.MatrixScreen
-import ua.compass.planner.ui.screens.MoreRoute
-import ua.compass.planner.ui.screens.MoreScreen
+import ua.compass.planner.ui.screens.MissionScreen
+import ua.compass.planner.ui.screens.RolesScreen
+import ua.compass.planner.ui.screens.SettingsScreen
 
-private enum class Tab(val label: Int, val icon: ImageVector) {
-    PLANNER(R.string.tab_planner, Icons.Rounded.CalendarMonth),
-    MATRIX(R.string.tab_matrix, Icons.Rounded.GridView),
-    HABITS(R.string.tab_habits, Icons.Rounded.TaskAlt),
-    JOURNAL(R.string.tab_journal, Icons.Rounded.Book),
-    MORE(R.string.tab_more, Icons.Rounded.MoreHoriz),
+private enum class Destination(val label: Int, val icon: ImageVector, val inBottomBar: Boolean) {
+    CALENDAR(R.string.nav_calendar, Icons.Rounded.CalendarMonth, true),
+    GOALS(R.string.nav_goals, Icons.Rounded.Flag, true),
+    MATRIX(R.string.nav_matrix, Icons.Rounded.GridView, true),
+    HABITS(R.string.nav_habits, Icons.Rounded.TaskAlt, true),
+    JOURNAL(R.string.nav_journal, Icons.Rounded.Book, true),
+    MISSION(R.string.nav_mission, Icons.Rounded.Explore, false),
+    ROLES(R.string.nav_roles, Icons.Rounded.Groups, false),
+    GUIDE(R.string.nav_guide, Icons.Rounded.Lightbulb, false),
+    SETTINGS(R.string.nav_settings, Icons.Rounded.Settings, false),
 }
+
+private val drawerGroups = listOf(
+    listOf(Destination.CALENDAR, Destination.GOALS, Destination.MATRIX, Destination.HABITS, Destination.JOURNAL),
+    listOf(Destination.MISSION, Destination.ROLES, Destination.GUIDE),
+    listOf(Destination.SETTINGS),
+)
 
 @Composable
 fun AppRoot(vm: AppViewModel) {
@@ -52,44 +59,95 @@ fun AppRoot(vm: AppViewModel) {
 
 @Composable
 private fun MainScreen(vm: AppViewModel) {
-    var tab by rememberSaveable { mutableStateOf(Tab.PLANNER) }
-    var moreRoute by rememberSaveable { mutableStateOf<MoreRoute?>(null) }
+    val data by vm.data.collectAsStateWithLifecycle()
+    var dest by rememberSaveable { mutableStateOf(Destination.CALENDAR) }
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     val holder = rememberSaveableStateHolder()
 
-    BackHandler(enabled = tab != Tab.PLANNER || moreRoute != null) {
-        if (moreRoute != null) moreRoute = null else tab = Tab.PLANNER
-    }
+    BackHandler(enabled = !drawerState.isOpen && dest != Destination.CALENDAR) { dest = Destination.CALENDAR }
+    BackHandler(enabled = drawerState.isOpen) { scope.launch { drawerState.close() } }
 
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        bottomBar = {
-            NavigationBar {
-                Tab.entries.forEach { t ->
-                    NavigationBarItem(
-                        selected = tab == t,
-                        onClick = {
-                            if (t == Tab.MORE && tab == Tab.MORE) moreRoute = null
-                            tab = t
-                        },
-                        icon = { Icon(t.icon, null) },
-                        label = { Text(stringResource(t.label), maxLines = 1) },
-                    )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            ModalDrawerSheet {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
+                    Column(Modifier.padding(start = 28.dp, end = 24.dp, top = 24.dp, bottom = 16.dp)) {
+                        Icon(
+                            Icons.Rounded.Explore,
+                            null,
+                            Modifier.size(36.dp),
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(stringResource(R.string.app_name), style = MaterialTheme.typography.titleLarge)
+                        if (data.mission.isNotBlank()) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                data.mission,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontStyle = FontStyle.Italic,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                maxLines = 3,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    }
+                    drawerGroups.forEachIndexed { i, group ->
+                        if (i > 0) HorizontalDivider(Modifier.padding(horizontal = 28.dp, vertical = 8.dp))
+                        group.forEach { d ->
+                            NavigationDrawerItem(
+                                label = { Text(stringResource(d.label)) },
+                                icon = { Icon(d.icon, null) },
+                                selected = dest == d,
+                                onClick = {
+                                    dest = d
+                                    scope.launch { drawerState.close() }
+                                },
+                                modifier = Modifier.padding(NavigationDrawerItemDefaults.ItemPadding),
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(16.dp))
                 }
             }
         },
-    ) { pad ->
-        Box(
-            Modifier
-                .padding(pad)
-                .fillMaxSize()
-        ) {
-            holder.SaveableStateProvider(tab.name) {
-                when (tab) {
-                    Tab.PLANNER -> PlannerScreen(vm)
-                    Tab.MATRIX -> MatrixScreen(vm)
-                    Tab.HABITS -> HabitsScreen(vm)
-                    Tab.JOURNAL -> JournalScreen(vm)
-                    Tab.MORE -> MoreScreen(vm, moreRoute) { moreRoute = it }
+    ) {
+        CompositionLocalProvider(LocalOpenDrawer provides { scope.launch { drawerState.open() } }) {
+            Scaffold(
+                contentWindowInsets = WindowInsets(0, 0, 0, 0),
+                bottomBar = {
+                    NavigationBar {
+                        Destination.entries.filter { it.inBottomBar }.forEach { d ->
+                            NavigationBarItem(
+                                selected = dest == d,
+                                onClick = { dest = d },
+                                icon = { Icon(d.icon, null) },
+                                label = { Text(stringResource(d.label), maxLines = 1) },
+                            )
+                        }
+                    }
+                },
+            ) { pad ->
+                Box(
+                    Modifier
+                        .padding(pad)
+                        .fillMaxSize()
+                ) {
+                    holder.SaveableStateProvider(dest.name) {
+                        when (dest) {
+                            Destination.CALENDAR -> PlannerScreen(vm)
+                            Destination.GOALS -> GoalsScreen(vm)
+                            Destination.MATRIX -> MatrixScreen(vm)
+                            Destination.HABITS -> HabitsScreen(vm)
+                            Destination.JOURNAL -> JournalScreen(vm)
+                            Destination.MISSION -> MissionScreen(vm)
+                            Destination.ROLES -> RolesScreen(vm)
+                            Destination.GUIDE -> GuideScreen()
+                            Destination.SETTINGS -> SettingsScreen(vm)
+                        }
+                    }
                 }
             }
         }

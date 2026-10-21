@@ -23,6 +23,8 @@ import ua.compass.planner.R
 import ua.compass.planner.data.AppData
 import ua.compass.planner.data.Goal
 import ua.compass.planner.data.Habit
+import ua.compass.planner.data.Horizon
+import ua.compass.planner.data.horizon
 import ua.compass.planner.data.JournalEntry
 import ua.compass.planner.data.Quadrant
 import ua.compass.planner.data.Role
@@ -32,8 +34,10 @@ import ua.compass.planner.ui.AppViewModel
 import ua.compass.planner.ui.EditorRequest
 import ua.compass.planner.ui.components.*
 import ua.compass.planner.util.Dates
+import ua.compass.planner.util.LocalFirstDayOfWeek
 import ua.compass.planner.util.currentLocale
 import java.time.LocalDate
+import java.time.YearMonth
 
 /** Full-screen editor shown above the tabs while the view model holds an [EditorRequest]. */
 @Composable
@@ -52,7 +56,7 @@ fun EditorHost(vm: AppViewModel) {
                     onClose = vm::closeEditor,
                 )
                 is EditorRequest.GoalEdit -> GoalEditor(
-                    r.goal, r.week, data,
+                    r.goal, r.refDay, data,
                     onSave = vm::saveGoal,
                     onDelete = { vm.deleteGoal(r.goal.id) },
                     onClose = vm::closeEditor,
@@ -159,19 +163,8 @@ private fun TaskEditor(initial: Task, data: AppData, onSave: (Task) -> Unit, onD
         }
 
         FieldLabel(stringResource(R.string.label_role_goal))
-        Selector(
-            label = stringResource(R.string.field_role),
-            value = t.roleId,
-            options = listOf<Pair<Long?, String>>(null to noneLabel) + roles.map { it.id to it.name },
-            colorOf = { id -> roles.firstOrNull { it.id == id }?.let { Color(it.color) } },
-            onSelect = { id ->
-                val goal = data.goals.firstOrNull { it.id == t.goalId }
-                t = t.copy(roleId = id, goalId = if (goal != null && goal.roleId != id) null else t.goalId)
-            },
-        )
-        val goalOptions = data.goals.filter {
-            (t.roleId == null || it.roleId == t.roleId) && (!it.done || it.id == t.goalId)
-        }
+        val goalOptions = data.goals.filter { !it.done || it.id == t.goalId }
+            .sortedWith(compareBy({ it.horizon }, { -(it.weekStart ?: 0L) }, { -(it.month ?: 0) }))
         Selector(
             label = stringResource(R.string.field_goal),
             value = t.goalId,
@@ -181,6 +174,13 @@ private fun TaskEditor(initial: Task, data: AppData, onSave: (Task) -> Unit, onD
                 val goal = data.goals.firstOrNull { it.id == id }
                 t = t.copy(goalId = id, roleId = goal?.roleId ?: t.roleId)
             },
+        )
+        Selector(
+            label = stringResource(R.string.field_role),
+            value = t.roleId,
+            options = listOf<Pair<Long?, String>>(null to noneLabel) + roles.map { it.id to it.name },
+            colorOf = { id -> roles.firstOrNull { it.id == id }?.let { Color(it.color) } },
+            onSelect = { id -> t = t.copy(roleId = id) },
         )
 
         FieldLabel(stringResource(R.string.label_priority))
@@ -247,7 +247,7 @@ private fun TaskEditor(initial: Task, data: AppData, onSave: (Task) -> Unit, onD
 @Composable
 private fun GoalEditor(
     initial: Goal,
-    week: Long,
+    refDay: Long,
     data: AppData,
     onSave: (Goal) -> Unit,
     onDelete: () -> Unit,
@@ -258,7 +258,10 @@ private fun GoalEditor(
     val locale = currentLocale()
     var confirmDelete by remember { mutableStateOf(false) }
     val roles = data.roles.sortedBy { it.order }
-    val weekOption = initial.weekStart ?: week
+    val firstDay = LocalFirstDayOfWeek.current
+    val ref = LocalDate.ofEpochDay(refDay)
+    val defaultWeek = Dates.weekStart(ref, firstDay).toEpochDay()
+    val defaultMonth = Dates.monthIndex(YearMonth.from(ref))
 
     EditorScaffold(
         title = stringResource(if (isNew) R.string.goal_new else R.string.goal_edit),
@@ -295,33 +298,44 @@ private fun GoalEditor(
 
         FieldLabel(stringResource(R.string.label_horizon))
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
-            SegmentedButton(
-                selected = g.weekStart != null,
-                onClick = { g = g.copy(weekStart = weekOption) },
-                shape = SegmentedButtonDefaults.itemShape(0, 2),
-            ) { Text(stringResource(R.string.goal_weekly)) }
-            SegmentedButton(
-                selected = g.weekStart == null,
-                onClick = { g = g.copy(weekStart = null) },
-                shape = SegmentedButtonDefaults.itemShape(1, 2),
-            ) { Text(stringResource(R.string.goal_long_term)) }
-        }
-        val ws = g.weekStart
-        if (ws != null) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { g = g.copy(weekStart = ws - 7) }) {
-                    Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, stringResource(R.string.previous))
-                }
-                Text(
-                    Dates.weekRange(LocalDate.ofEpochDay(ws), locale),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                )
-                IconButton(onClick = { g = g.copy(weekStart = ws + 7) }) {
-                    Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, stringResource(R.string.next))
+            Horizon.entries.forEachIndexed { i, h ->
+                SegmentedButton(
+                    selected = g.horizon == h,
+                    onClick = {
+                        g = when (h) {
+                            Horizon.WEEK -> g.copy(weekStart = g.weekStart ?: defaultWeek, month = null)
+                            Horizon.MONTH -> g.copy(weekStart = null, month = g.month ?: defaultMonth)
+                            Horizon.LONG -> g.copy(weekStart = null, month = null)
+                        }
+                    },
+                    shape = SegmentedButtonDefaults.itemShape(i, Horizon.entries.size),
+                ) {
+                    Text(
+                        stringResource(
+                            when (h) {
+                                Horizon.WEEK -> R.string.horizon_week
+                                Horizon.MONTH -> R.string.horizon_month
+                                Horizon.LONG -> R.string.horizon_long
+                            }
+                        ),
+                        maxLines = 1,
+                    )
                 }
             }
+        }
+        val ws = g.weekStart?.let { Dates.weekStart(LocalDate.ofEpochDay(it), firstDay) }
+        val mi = g.month
+        when {
+            ws != null -> PeriodNavigator(
+                Dates.weekRange(ws, locale),
+                onPrev = { g = g.copy(weekStart = ws.minusWeeks(1).toEpochDay()) },
+                onNext = { g = g.copy(weekStart = ws.plusWeeks(1).toEpochDay()) },
+            )
+            mi != null -> PeriodNavigator(
+                Dates.format(Dates.yearMonth(mi).atDay(1), "LLLL yyyy", locale),
+                onPrev = { g = g.copy(month = mi - 1) },
+                onNext = { g = g.copy(month = mi + 1) },
+            )
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = g.done, onCheckedChange = { g = g.copy(done = it) })
@@ -335,7 +349,9 @@ private fun GoalEditor(
         ReminderField(
             value = g.reminderAt,
             defaultMillis = {
-                val start = LocalDate.ofEpochDay(g.weekStart ?: Dates.todayEpoch())
+                val start = g.weekStart?.let(LocalDate::ofEpochDay)
+                    ?: g.month?.let { Dates.yearMonth(it).atDay(1) }
+                    ?: LocalDate.now()
                 Dates.millis(if (start.isBefore(LocalDate.now())) LocalDate.now() else start, 9 * 60)
             },
             onChange = { g = g.copy(reminderAt = it) },

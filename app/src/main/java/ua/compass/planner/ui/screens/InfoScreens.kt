@@ -35,83 +35,18 @@ import ua.compass.planner.ui.AppViewModel
 import ua.compass.planner.ui.components.ColorDot
 import ua.compass.planner.ui.components.ConfirmDialog
 import ua.compass.planner.ui.components.EmptyState
-import ua.compass.planner.ui.components.GoalLine
 import ua.compass.planner.ui.components.SectionCard
 import ua.compass.planner.ui.components.SubScaffold
-import ua.compass.planner.util.Dates
+import java.time.DayOfWeek
 import java.time.LocalDate
 
-enum class MoreRoute { MISSION, ROLES, GUIDE, SETTINGS }
-
 @Composable
-fun MoreScreen(vm: AppViewModel, route: MoreRoute?, onRoute: (MoreRoute?) -> Unit) {
-    when (route) {
-        null -> MoreMenu(vm, onRoute)
-        MoreRoute.MISSION -> MissionScreen(vm) { onRoute(null) }
-        MoreRoute.ROLES -> RolesScreen(vm) { onRoute(null) }
-        MoreRoute.GUIDE -> GuideScreen { onRoute(null) }
-        MoreRoute.SETTINGS -> SettingsScreen(vm) { onRoute(null) }
-    }
-}
-
-@Composable
-private fun MoreMenu(vm: AppViewModel, onRoute: (MoreRoute) -> Unit) {
-    val data by vm.data.collectAsStateWithLifecycle()
-    Scaffold(
-        contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.tab_more)) }) },
-    ) { pad ->
-        Column(
-            Modifier
-                .padding(pad)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
-        ) {
-            MenuItem(
-                Icons.Rounded.Explore,
-                stringResource(R.string.mission_title),
-                data.mission.ifBlank { stringResource(R.string.mission_menu_hint) },
-            ) { onRoute(MoreRoute.MISSION) }
-            MenuItem(
-                Icons.Rounded.Groups,
-                stringResource(R.string.roles_title),
-                stringResource(R.string.roles_menu_hint, data.roles.size, data.goals.count { !it.done }),
-            ) { onRoute(MoreRoute.ROLES) }
-            MenuItem(Icons.Rounded.Lightbulb, stringResource(R.string.guide_title), stringResource(R.string.guide_menu_hint)) {
-                onRoute(MoreRoute.GUIDE)
-            }
-            MenuItem(Icons.Rounded.Settings, stringResource(R.string.settings_title), stringResource(R.string.settings_menu_hint)) {
-                onRoute(MoreRoute.SETTINGS)
-            }
-        }
-    }
-}
-
-@Composable
-private fun MenuItem(icon: ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        shape = RoundedCornerShape(18.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
-    ) {
-        ListItem(
-            leadingContent = { Icon(icon, null, tint = MaterialTheme.colorScheme.primary) },
-            headlineContent = { Text(title, fontWeight = FontWeight.SemiBold) },
-            supportingContent = { Text(subtitle, maxLines = 2) },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-        )
-    }
-}
-
-@Composable
-private fun MissionScreen(vm: AppViewModel, onBack: () -> Unit) {
+fun MissionScreen(vm: AppViewModel) {
     val data by vm.data.collectAsStateWithLifecycle()
     var text by rememberSaveable { mutableStateOf(data.mission) }
     val latest by rememberUpdatedState(text)
     DisposableEffect(Unit) { onDispose { vm.setMission(latest.trim()) } }
-    SubScaffold(title = stringResource(R.string.mission_title), onBack = onBack) { pad ->
+    SubScaffold(title = stringResource(R.string.mission_title)) { pad ->
         Column(
             Modifier
                 .padding(pad)
@@ -148,14 +83,10 @@ private fun MissionScreen(vm: AppViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-private fun RolesScreen(vm: AppViewModel, onBack: () -> Unit) {
+fun RolesScreen(vm: AppViewModel) {
     val data by vm.data.collectAsStateWithLifecycle()
-    val week = Dates.weekStart(LocalDate.now()).toEpochDay()
-    val roleIds = data.roles.map { it.id }.toSet()
-    val orphans = data.goals.filter { it.roleId == null || it.roleId !in roleIds }
     SubScaffold(
         title = stringResource(R.string.roles_title),
-        onBack = onBack,
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { vm.newRole() },
@@ -180,44 +111,32 @@ private fun RolesScreen(vm: AppViewModel, onBack: () -> Unit) {
             }
             if (data.roles.isEmpty()) item { EmptyState(Icons.Rounded.Groups, stringResource(R.string.roles_empty)) }
             items(data.roles.sortedBy { it.order }, key = { it.id }) { role ->
-                SectionCard {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                val goals = data.goals.filter { it.roleId == role.id }
+                Card(
+                    onClick = { vm.editRole(role) },
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                ) {
+                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
                         ColorDot(Color(role.color), 14)
-                        Spacer(Modifier.width(10.dp))
-                        Text(role.name, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                        IconButton(onClick = { vm.editRole(role) }) { Icon(Icons.Rounded.Edit, stringResource(R.string.edit)) }
-                    }
-                    if (role.description.isNotBlank()) {
-                        Text(
-                            role.description,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                    data.goals.filter { it.roleId == role.id }
-                        .sortedWith(compareBy({ it.done }, { -(it.weekStart ?: Long.MAX_VALUE) }))
-                        .forEach { goal ->
-                            GoalLine(goal, onToggle = { vm.toggleGoal(goal.id) }, onClick = { vm.editGoal(goal, week) })
+                        Spacer(Modifier.width(12.dp))
+                        Column(Modifier.weight(1f)) {
+                            Text(role.name, style = MaterialTheme.typography.titleMedium)
+                            if (role.description.isNotBlank()) {
+                                Text(
+                                    role.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                            Text(
+                                stringResource(R.string.role_goals_count, goals.count { !it.done }, goals.count { it.done }),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(top = 4.dp),
+                            )
                         }
-                    Row {
-                        TextButton(onClick = { vm.newGoal(role.id, week) }) {
-                            Icon(Icons.Rounded.Add, null, Modifier.size(18.dp))
-                            Spacer(Modifier.width(4.dp))
-                            Text(stringResource(R.string.add_week_goal))
-                        }
-                        TextButton(onClick = { vm.newGoal(role.id, week, weekly = false) }) {
-                            Text(stringResource(R.string.add_long_goal))
-                        }
-                    }
-                }
-            }
-            if (orphans.isNotEmpty()) {
-                item(key = "orphans") {
-                    SectionCard {
-                        Text(stringResource(R.string.no_role), style = MaterialTheme.typography.titleMedium)
-                        orphans.forEach { goal ->
-                            GoalLine(goal, onToggle = { vm.toggleGoal(goal.id) }, onClick = { vm.editGoal(goal, week) })
-                        }
+                        Icon(Icons.Rounded.Edit, stringResource(R.string.edit), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 }
             }
@@ -226,7 +145,7 @@ private fun RolesScreen(vm: AppViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-private fun GuideScreen(onBack: () -> Unit) {
+fun GuideScreen() {
     val habits = listOf(
         R.string.habit1_title to R.string.habit1_text,
         R.string.habit2_title to R.string.habit2_text,
@@ -236,7 +155,7 @@ private fun GuideScreen(onBack: () -> Unit) {
         R.string.habit6_title to R.string.habit6_text,
         R.string.habit7_title to R.string.habit7_text,
     )
-    SubScaffold(title = stringResource(R.string.guide_title), onBack = onBack) { pad ->
+    SubScaffold(title = stringResource(R.string.guide_title)) { pad ->
         LazyColumn(
             Modifier
                 .padding(pad)
@@ -274,9 +193,10 @@ private fun GuideScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
+fun SettingsScreen(vm: AppViewModel) {
     val context = LocalContext.current
     val theme by vm.theme.collectAsStateWithLifecycle()
+    val firstDay by vm.firstDay.collectAsStateWithLifecycle()
     var confirmImport by remember { mutableStateOf(false) }
     val exportOk = stringResource(R.string.export_ok)
     val importOk = stringResource(R.string.import_ok)
@@ -288,7 +208,7 @@ private fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
         if (uri != null) Toast.makeText(context, if (vm.importFrom(uri)) importOk else failed, Toast.LENGTH_SHORT).show()
     }
 
-    SubScaffold(title = stringResource(R.string.settings_title), onBack = onBack) { pad ->
+    SubScaffold(title = stringResource(R.string.settings_title)) { pad ->
         Column(
             Modifier
                 .padding(pad)
@@ -305,6 +225,12 @@ private fun SettingsScreen(vm: AppViewModel, onBack: () -> Unit) {
                     "dark" to R.string.theme_dark,
                 ).forEach { (value, label) ->
                     RadioRow(stringResource(label), theme == value) { vm.setTheme(value) }
+                }
+            }
+            SectionCard {
+                Text(stringResource(R.string.settings_first_day), style = MaterialTheme.typography.titleMedium)
+                listOf(DayOfWeek.MONDAY to R.string.monday, DayOfWeek.SUNDAY to R.string.sunday).forEach { (day, label) ->
+                    RadioRow(stringResource(label), firstDay == day) { vm.setFirstDay(day) }
                 }
             }
             SectionCard {

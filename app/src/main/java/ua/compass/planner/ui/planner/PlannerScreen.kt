@@ -31,15 +31,18 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ua.compass.planner.R
 import ua.compass.planner.data.AppData
+import ua.compass.planner.data.Horizon
+import ua.compass.planner.data.inWeek
 import ua.compass.planner.data.isDone
 import ua.compass.planner.ui.AppViewModel
 import ua.compass.planner.ui.components.ColorDot
-import ua.compass.planner.ui.components.GoalLine
-import ua.compass.planner.ui.components.SectionCard
+import ua.compass.planner.ui.components.DrawerButton
+import ua.compass.planner.ui.components.PeriodGoalsCard
 import ua.compass.planner.ui.components.TaskCard
 import ua.compass.planner.ui.components.taskColor
 import ua.compass.planner.ui.components.taskMeta
 import ua.compass.planner.util.Dates
+import ua.compass.planner.util.LocalFirstDayOfWeek
 import ua.compass.planner.util.currentLocale
 import java.time.LocalDate
 import java.time.YearMonth
@@ -56,7 +59,8 @@ fun PlannerScreen(vm: AppViewModel) {
     var anchorDay by rememberSaveable { mutableLongStateOf(Dates.todayEpoch()) }
     val anchor = LocalDate.ofEpochDay(anchorDay)
     val today = LocalDate.now()
-    val weekStart = Dates.weekStart(anchor)
+    val firstDay = LocalFirstDayOfWeek.current
+    val weekStart = Dates.weekStart(anchor, firstDay)
 
     val title = when (mode) {
         PlannerMode.DAY -> Dates.format(anchor, "EEEE, d MMMM", locale)
@@ -77,6 +81,7 @@ fun PlannerScreen(vm: AppViewModel) {
         topBar = {
             TopAppBar(
                 title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+                navigationIcon = { DrawerButton() },
                 actions = {
                     IconButton(onClick = { shift(-1) }) {
                         Icon(Icons.AutoMirrored.Rounded.KeyboardArrowLeft, stringResource(R.string.previous))
@@ -152,7 +157,9 @@ private fun WeekPlanner(vm: AppViewModel, data: AppData, weekStart: LocalDate, o
             Section("d${d.toEpochDay()}", d.toEpochDay(), Dates.format(d, "EEEE, d MMM", locale), d == today)
         } + Section("inbox", null, inboxTitle, false)
     }
-    val isCurrentWeek = Dates.weekStart(today) == weekStart
+    val firstDay = LocalFirstDayOfWeek.current
+    val isCurrentWeek = Dates.weekStart(today, firstDay) == weekStart
+    val weekGoals = data.goals.filter { it.inWeek(weekStart, firstDay) }
     val overdue = remember(data.tasks, today) { overdueCount(data, today) }
     PlannerList(
         vm = vm,
@@ -162,7 +169,17 @@ private fun WeekPlanner(vm: AppViewModel, data: AppData, weekStart: LocalDate, o
         prefix = {
             if (data.mission.isNotBlank()) item(key = "mission") { MissionQuote(data.mission) }
             if (isCurrentWeek && overdue > 0) item(key = "overdue") { OverdueBanner(overdue) { vm.moveOverdueToToday() } }
-            item(key = "goals") { WeekGoalsCard(vm, data, weekStart.toEpochDay()) }
+            item(key = "goals") {
+                PeriodGoalsCard(
+                    title = stringResource(R.string.week_goals),
+                    goals = weekGoals,
+                    tasks = data.tasks,
+                    onAddGoal = { vm.newGoal(Horizon.WEEK, weekStart.toEpochDay()) },
+                    onToggle = { vm.toggleGoal(it.id) },
+                    onEdit = { vm.editGoal(it) },
+                    onAddTask = { vm.newTaskForGoal(it) },
+                )
+            }
         },
     )
 }
@@ -236,92 +253,6 @@ private fun OverdueBanner(count: Int, onMove: () -> Unit) {
 }
 
 @Composable
-private fun WeekGoalsCard(vm: AppViewModel, data: AppData, weekStart: Long) {
-    var expanded by rememberSaveable { mutableStateOf(true) }
-    val goals = data.goals.filter { it.weekStart == weekStart || (it.weekStart == null && !it.done) }
-    val weekly = goals.filter { it.weekStart != null }
-    SectionCard {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { expanded = !expanded },
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Icon(Icons.Rounded.Flag, null, tint = MaterialTheme.colorScheme.primary)
-            Spacer(Modifier.width(10.dp))
-            Text(stringResource(R.string.week_goals), style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-            if (weekly.isNotEmpty()) {
-                Text(
-                    "${weekly.count { it.done }}/${weekly.size}",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.width(8.dp))
-            }
-            Icon(if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore, null)
-        }
-        if (!expanded) return@SectionCard
-        Spacer(Modifier.height(4.dp))
-        if (data.roles.isEmpty()) {
-            Text(
-                stringResource(R.string.week_goals_no_roles),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            TextButton(onClick = { vm.newRole() }) { Text(stringResource(R.string.add_role)) }
-        }
-        val roleIds = data.roles.map { it.id }.toSet()
-        data.roles.sortedBy { it.order }.forEach { role ->
-            Row(Modifier.padding(top = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                ColorDot(Color(role.color), 10)
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    role.name,
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.weight(1f),
-                )
-                IconButton(onClick = { vm.newGoal(role.id, weekStart) }, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Rounded.Add, stringResource(R.string.add_goal), Modifier.size(20.dp))
-                }
-            }
-            goals.filter { it.roleId == role.id }.forEach { goal -> WeekGoal(vm, goal, weekStart) }
-        }
-        goals.filter { it.roleId == null || it.roleId !in roleIds }.takeIf { it.isNotEmpty() }?.let { orphans ->
-            Text(
-                stringResource(R.string.no_role),
-                style = MaterialTheme.typography.labelLarge,
-                modifier = Modifier.padding(top = 6.dp),
-            )
-            orphans.forEach { goal -> WeekGoal(vm, goal, weekStart) }
-        }
-        if (data.roles.isNotEmpty()) {
-            Text(
-                stringResource(R.string.week_goals_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = 6.dp),
-            )
-        }
-    }
-}
-
-@Composable
-private fun WeekGoal(vm: AppViewModel, goal: ua.compass.planner.data.Goal, weekStart: Long) {
-    GoalLine(
-        goal = goal,
-        onToggle = { vm.toggleGoal(goal.id) },
-        onClick = { vm.editGoal(goal, weekStart) },
-        trailing = {
-            IconButton(onClick = { vm.newTask(null, goal = goal) }) {
-                Icon(Icons.Rounded.AddTask, stringResource(R.string.add_task_for_goal), Modifier.size(20.dp))
-            }
-        },
-    )
-}
-
-@Composable
 private fun HabitsStrip(vm: AppViewModel, data: AppData, day: Long) {
     Column {
         Text(
@@ -362,8 +293,12 @@ private fun MonthView(
     val today = LocalDate.now()
     val month = YearMonth.from(selected)
     val first = month.atDay(1)
-    val gridStart = Dates.weekStart(first)
-    val weeks = (first.dayOfWeek.value - 1 + month.lengthOfMonth() + 6) / 7
+    val firstDay = LocalFirstDayOfWeek.current
+    val gridStart = Dates.weekStart(first, firstDay)
+    val lead = first.toEpochDay() - gridStart.toEpochDay()
+    val weeks = ((lead + month.lengthOfMonth() + 6) / 7).toInt()
+    val monthIndex = Dates.monthIndex(month)
+    val monthGoals = data.goals.filter { it.month == monthIndex }
     val byDay = remember(data.tasks) { data.tasks.filter { it.date != null }.groupBy { it.date!! } }
     val roles = remember(data.roles) { data.roles.associateBy { it.id } }
     val goals = remember(data.goals) { data.goals.associateBy { it.id } }
@@ -438,6 +373,16 @@ private fun MonthView(
                 }
             }
         }
+        Spacer(Modifier.height(12.dp))
+        PeriodGoalsCard(
+            title = stringResource(R.string.month_goals),
+            goals = monthGoals,
+            tasks = data.tasks,
+            onAddGoal = { vm.newGoal(Horizon.MONTH, selected.toEpochDay()) },
+            onToggle = { vm.toggleGoal(it.id) },
+            onEdit = { vm.editGoal(it) },
+            onAddTask = { vm.newTaskForGoal(it) },
+        )
         Row(Modifier.padding(top = 16.dp, bottom = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(
                 Dates.format(selected, "EEEE, d MMMM", locale),

@@ -8,6 +8,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,6 +17,7 @@ import ua.compass.planner.data.Settings
 import ua.compass.planner.ui.AppRoot
 import ua.compass.planner.ui.AppViewModel
 import ua.compass.planner.ui.theme.CompassTheme
+import ua.compass.planner.util.LocalFirstDayOfWeek
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context) {
@@ -37,8 +39,11 @@ class MainActivity : ComponentActivity() {
                 enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
                 onDispose {}
             }
+            val firstDay by vm.firstDay.collectAsStateWithLifecycle()
             CompassTheme(dark) {
-                AppRoot(vm)
+                CompositionLocalProvider(LocalFirstDayOfWeek provides firstDay) {
+                    AppRoot(vm)
+                }
             }
         }
     }

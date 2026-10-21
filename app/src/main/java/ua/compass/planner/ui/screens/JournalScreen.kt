@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ua.compass.planner.R
 import ua.compass.planner.ui.AppViewModel
+import ua.compass.planner.ui.components.DrawerButton
 import ua.compass.planner.ui.components.EmptyState
 import ua.compass.planner.util.Dates
 import ua.compass.planner.util.currentLocale
@@ -29,7 +30,7 @@ fun JournalScreen(vm: AppViewModel) {
     val locale = currentLocale()
     Scaffold(
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.journal_title)) }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.journal_title)) }, navigationIcon = { DrawerButton() }) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { vm.openJournal(Dates.todayEpoch()) },
